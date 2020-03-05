@@ -69,9 +69,9 @@ Una volta che il pagamento è stato diviso tra i vari destinatari, il discovery 
 
 \section{Visualizzazione del bootleg}
 
-Una volta che l'utente possiede il token, nella lista dei bootleg compare il pulsante ‘‘Watch’’ di fianco al bootleg, che consente all'utente di visualizzare il bootleg. Dal momento che il front-end non possiede di per se l'url del video, cliccando su ‘‘Watch’’ il front end invia al Discovery service una richiesta per ottenere il link del bootleg per mostrarlo all'utente.
+Una volta che l'utente possiede il token, nella lista dei bootleg compare il pulsante ‘‘Watch’’ di fianco al bootleg, che consente all'utente di visualizzare il bootleg. Dal momento che il front-end non possiede di per se l'url del video, deve richiederlo al Discovery Service. Il modo in cui il frontend richiede ed ottiene il link al contenuto del bootleg si basa su uno schema challenge-response. 
 
-Quando il DS riceve questa richiesta, crea una \textit{challenge} casuale, la salva nel database insieme ad un attributo boolean *consumed*, inizialmente settato a "false", per indicare che la *challenge* non è stata ancora utilizzata per accedere ad un bootleg. 
+Cliccando su ‘‘Watch’’ il front end invia una richiesta al Discovery service per il link al bootleg.Quando il DS riceve questa richiesta, crea una \textit{challenge} casuale, la salva nel database insieme ad un attributo boolean \textit{consumed}, inizialmente settato a ‘‘false’’, per indicare che la challenge non è stata ancora utilizzata per accedere ad un bootleg. 
 
 Quando il frontend riceve la challenge dal Discovery Service, crea un nuovo Payload Atom contenente la challenge, firma questo Atom con la propria identity e lo invia al Discovery Service con una richiesta http insieme all'URI del token del bootleg da visualizzare.
 

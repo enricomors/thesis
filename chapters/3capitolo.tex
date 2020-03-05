@@ -1,20 +1,24 @@
 \chapter{Implementazione}
 %‘‘’’
-Sia per la realizzazione del front end che del discovery service ho utilizzato TypeScript, sfruttando le funzionalità offerte dalla libreria JavaScript di Radix. 
+Sia per la realizzazione del front end che del Bootleg Service ho utilizzato TypeScript, sfruttando le funzionalità offerte dalla libreria JavaScript di Radix. 
 
-Per velocizzare lo sviluppo del discovery service, ho usato come base di partenza un server realizzato con TypeScript e WebPack. Ad esso ho aggiunto il codice per la connessione ad un database locale MongoDB, per tenere traccia di tutte le informazioni relative ai bootleg. Essendo a tutti gli effetti un server, per comunicare con il Discovery Service vengono utilizzate delle normali richieste http, costruite utilizzando la libreria axios.
+Per velocizzare lo sviluppo del Bootleg Service, ho usato come base di partenza un server realizzato con TypeScript e WebPack. Ad esso ho aggiunto il codice per la connessione ad un database locale MongoDB, per tenere traccia di tutte le informazioni relative ai bootleg. Essendo a tutti gli effetti un server, per comunicare con il Bootleg Service vengono utilizzate delle normali richieste http, costruite utilizzando la libreria axios.
 
 Per il front end invece ho utilizzato il framework Vue.js, in quanto permette di realizzare un interfaccia utente in maniera piuttosto semplice, e inoltre consente di mantenere le astrazioni di Radix (Atom, Transazioni, ecc.) separate dal codice HTML.
 
-Come già accennato in precedenza, attualmente non è stata ancora attivata la rete pubblica di Radix, dunque per sviluppare applicazioni è necessario simulare la rete sulla propria macchina. Per farlo, è disponibile un emulatore da eseguire in locale, attraverso un'immagine Docker. Una volta lanciato l'Emulator, sarà disponibile collegarsi ad una rete Radix ed eseguire correttamente l'applicazione. Il modo in cui eseguire il Betanet Emulator sulla propria macchina è spiegato nella documentazione di Radix: [https://docs.radixdlt.com/kb/develop/betanet-emulator](https://docs.radixdlt.com/kb/develop/betanet-emulator). 
+\subsubsection{Scelta dell'Universe}
+
+Come già accennato nel primo capitolo di questa tesi, il concetto di Universe rappresenta la rete Radix. Attualmente sono disponibili diversi Universe di testing ai quali connettersi per testare la propria applicazione (un po' come le reti messe a disposizione di Ethereum per le DApp in fase di sviluppo). La prima cosa che deve fare un'applicazione all'avvio è connettersi con uno di questi Universe a disposizione. Attualmente gli Universe disponibili per la libreria JavaScript sono: BETANET_EMULATOR, BETANET, LOCALHOST_SINGLENODE, LOCALHOST e SUNSTONE. In una prima versione dell'applicazione ho deciso di utilizzare l'Universe BETANET_EMULATOR, in quanto consentiva di avviare l'applicazione senza dover prima avviare il Betanet Emulator sulla propria macchina. 
+
+Solo successivamente ho deciso di aggiungere anche una versione che utilizzasse l'Universe LOCALHOST_SINGLENODE, che richiede l'avvio del Betanet Emulator per simulare la rete betanet sulla propria macchina. E' possibile avviare l'emulatore attraverso un'immagine Docker, seguendo la procedura spiegata sul sito di Radix.
 
 Sempre nella documentazione Radix è possibile consultare diversi esempi di codice che sono stati fondamentali durante l'implementazione del progetto.
 
 \section{Utilizzo dei Token}
 
-Per effettuare i pagamenti dei bootleg all'interno dell'applicazione, viene usato il token BTLG. Il discovery service definisce il token BTLG al suo primo avvio come un token multi-issuance. Nel momento in cui un utente crea una nuova identity, il frontend invia una richiesta al discovery service per ricevere una somma iniziale di token BTLG token. In sostanza, il Discovery Service prende il posto del Faucet, ovvero un account particolare che ha lo scopo di inviare dei token nativi di test. 
+Per effettuare i pagamenti dei bootleg all'interno dell'applicazione, viene usato il token BTLG. Il Bootleg Service definisce il token BTLG al suo primo avvio come un token multi-issuance. Nel momento in cui un utente crea una nuova identity, il frontend invia una richiesta al Bootleg Service per ricevere una somma iniziale di token BTLG token. In sostanza, il Bootleg Service prende il posto del Faucet, ovvero un account particolare che ha lo scopo di inviare dei token nativi di test. La scelta di creare un token nativo per l'applicazione con il Bootleg Service, e di inviarne una quantità predefinita a ciascuna nuova identity è stata presa soltanto durante l'implementazione del progetto. Il motivo è che ...
 
-Il Discovery Service ha anche il compito di definire un Token univoco per ciascun bootleg nel momento della sua creazione. Il possesso di questo Token da parte di un utente è ciò che indica al sistema che tale utente ha acquistato il relativo bootleg, e pertanto è autorizzato a visualizzarlo.
+Il Bootleg Service ha anche il compito di definire un Token univoco per ciascun bootleg nel momento della sua creazione. Il possesso di questo Token da parte di un utente è ciò che indica al sistema che tale utente ha acquistato il relativo bootleg, e pertanto è autorizzato a visualizzarlo.
 
 \section{Gestione dell'identity}
 
@@ -76,11 +80,11 @@ Per creare un bootleg, è necessario inserire:
     \label{fig:bootleg_create}
 \end{figure}
 
-Quando l'utente da la conferma, questi vengono inviati al server (Discovery Service), che provvederà a creare il token per il bootleg e salverà tutti i dati inviati dall'utente sul database, insieme all'identificativo del token appena creato, ed agli indirizzi di bootlegger e artista. Terminato l'inserimento, il Discovery Service invierà all'utente l'identificativo del token come conferma.
+Quando l'utente da la conferma, questi vengono inviati al server (Bootleg Service), che provvederà a creare il token per il bootleg e salverà tutti i dati inviati dall'utente sul database, insieme all'identificativo del token appena creato, ed agli indirizzi di bootlegger e artista. Terminato l'inserimento, il Bootleg Service invierà all'utente l'identificativo del token come conferma.
 
 \section{Acquisto di un bootleg}
 
-L'applicazione recupera la lista dei bootleg inseriti sul database inviando una richiesta al Discovery Service, che esegue una query e recupera tutti i dati dei bootleg (ad eccezione dell'url del video), e li invia al frontend.
+L'applicazione recupera la lista dei bootleg inseriti sul database inviando una richiesta al Bootleg Service, che esegue una query e recupera tutti i dati dei bootleg (ad eccezione dell'url del video), e li invia al frontend.
 
 Per ciascun bootleg nella lista, il front end verifica se sono presenti nell'account dell'utente, e in caso contrario mostra un pulsante ‘‘Buy’’.
 
@@ -90,13 +94,13 @@ Per ciascun bootleg nella lista, il front end verifica se sono presenti nell'acc
     \label{fig:manage_bootleg}
 \end{figure}
 
-Quando un utente acquista un bootleg, l'applicazione verifica che il suo account possieda un ammontare sufficiente di BTLG. Se si, il pagamento viene inviato al discovery service, insieme ai dati del bootleg da acquistare. Il Discovery Service può così dividere il pagamento in parti uguali tra artista, bootlegger ed eventuali franchisor.
+Quando un utente acquista un bootleg, l'applicazione verifica che il suo account possieda un ammontare sufficiente di BTLG. Se si, il pagamento viene inviato al Bootleg Service, insieme ai dati del bootleg da acquistare. Il Bootleg Service può così dividere il pagamento in parti uguali tra artista, bootlegger ed eventuali franchisor.
 
-Una volta che il pagamento è stato diviso tra i vari destinatari, il discovery service procede con l'invio del token all'utente ed inserisce quest'ultimo nella lista dei franchisor per quel token, aggiornando i dati sul database. In questo modo, quando verrà effettuato un nuovo acquisto del bootleg, l'utente riceverà una percentuale del pagamento come franchisor. 
+Una volta che il pagamento è stato diviso tra i vari destinatari, il Bootleg Service procede con l'invio del token all'utente ed inserisce quest'ultimo nella lista dei franchisor per quel token, aggiornando i dati sul database. In questo modo, quando verrà effettuato un nuovo acquisto del bootleg, l'utente riceverà una percentuale del pagamento come franchisor. 
 
 \section{Visualizzazione del bootleg}
 
-Una volta che l'utente possiede il token, nella lista dei bootleg compare il pulsante ‘‘Watch’’ di fianco al bootleg, che consente all'utente di visualizzare il bootleg. Dal momento che il front-end non possiede di per se l'url del video, deve richiederlo al Discovery Service. Il modo in cui il frontend richiede ed ottiene il link al contenuto del bootleg si basa su uno schema challenge-response. 
+Una volta che l'utente possiede il token, nella lista dei bootleg compare il pulsante ‘‘Watch’’ di fianco al bootleg, che consente all'utente di visualizzare il bootleg. Dal momento che il front-end non possiede di per se l'url del video, deve richiederlo al Bootleg Service. Il modo in cui il frontend richiede ed ottiene il link al contenuto del bootleg si basa su uno schema challenge-response. 
 
 \begin{figure}[H]
     \includegraphics[width=\linewidth]{images/application/bootleg-purchased.png}
@@ -104,11 +108,11 @@ Una volta che l'utente possiede il token, nella lista dei bootleg compare il pul
     \label{fig:bootleg_purchased}
 \end{figure}
 
-Cliccando su ‘‘Watch’’ il front end invia una richiesta al Discovery service per il link al bootleg.Quando il DS riceve questa richiesta, crea una \textit{challenge} casuale, la salva nel database insieme ad un attributo boolean \textit{consumed}, inizialmente settato a ‘‘false’’, per indicare che la challenge non è stata ancora utilizzata per accedere ad un bootleg. 
+Cliccando su ‘‘Watch’’ il front end invia una richiesta al Bootleg Service per il link al bootleg.Quando il DS riceve questa richiesta, genera una \textit{challenge} casuale, che nel caso specifico dell'applicazione, è un UUID generato con il package uuidv4. La challenge, prima di essere inviata, viene nel database insieme ad un attributo boolean \textit{consumed}, inizialmente settato a ‘‘false’’, per indicare che la challenge non è stata ancora utilizzata per accedere ad un bootleg. 
 
-Quando il frontend riceve la challenge dal Discovery Service, crea un nuovo Payload Atom contenente la challenge, firma questo Atom con la propria identity e lo invia al Discovery Service con una richiesta http insieme all'URI del token del bootleg da visualizzare.
+Quando il frontend riceve la challenge dal Bootleg Service, crea un nuovo Payload Atom, vi inserisce la challenge ottenuta dal Bootleg Service come payload, firma questo Atom con la propria identity e lo invia al Bootleg Service con una richiesta http insieme all'URI del token del bootleg da visualizzare.
 
-Una volta che il Discovery Service riceve anche questa richiesta:
+Una volta che il Bootleg Service riceve anche questa richiesta:
 \begin{enumerate}
     \item Estrae l'atom dalla richiesta e verifica la validità della firma dell'atom, cioè controlla se è stata prodotta dall'account che ha creato l'atom. Se la firma viene verificata con successo, il DS procede con la verifica della challenge.
     \item Verifica la validità della challenge: il DS estrae la challenge dal payload dell'atom, ed esegue una query sul database per trovare la challenge ricevuta. Se non viene trovata la challenge, oppure viene trovata ma l'attributo ‘‘consumed’’ ha valore ‘‘true’’ (dunque è già stata utilizzata), la challenge non viene considerata valida e il DS restituisce un errore al frontend. Altrimenti, aggiorna il valore di ‘‘consumed’’ a true sul database e prosegue al passo successivo.

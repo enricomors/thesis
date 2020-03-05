@@ -12,35 +12,36 @@ Il SRNFT mantiene una lista di account Ethereum chiamati ‘‘franchisors’’
 
 Un token ERC721 può avere un solo proprietario, e questa restrizione viene mantenuta nel SRNFT (gli stessi autori del progetto specificano che sarebbe interessante modificare tale aspetto, in modo da avere account multipli come proprietari del token). Dunque, nonostante vi possano essere più franchisor, solo quello aggiunto più recentemente ha la possibilità di trasferire il token ad un nuovo proprietario.
 
-Il Web3Studio presenta come caso d'uso per questo token, un'applicazione specifica per il campo dell'industria musicale, chiamata \textit{Bootleg}, da cui ho preso ispirazione per la progettazione di una applicazione con la libreria JS di RadixDLT. 
+Il Web3Studio presenta come caso d'uso per questo token, un'applicazione specifica per il campo dell'industria musicale, chiamata \textit{Bootleg}, che ho utilizzato come spunto per l'applicazione da realizzare.
 
 \subsection{L'applicazione radix-bootleg}
+Ispirandomi dunque all'applicazione ‘‘fittizia’’ Bootleg di Web3Studio, ho deciso di realizzare una mia versione di questo progetto, che fosse però basata sulla libreria JavaScript di Radix DLT. 
 
-L'idea di è di consentire ai musicisti di costruire una nuova fonte di guadagno basata sulla distribuzione dei bootleg, ovvero le registrazioni degli spettacoli dal vivo realizzate dai fan (cosiddetti \textit{bootlegger}). Mentre tradizionalmente i bootleg si diffondono in maniera non ufficiale, in questo caso di artisti ricevono royalties dalla vendita dei bootleg che condividono con i bootlegger. Inoltre, anche i fan che acquistano un bootleg, hanno la possibilità di condividere con l'artista le royalties generate da vendite future di tale contenuto. Questo costituisce un incentivo per i fan a non copiare il video e a diffonderlo in maniera indipendente, ad esempio attraverso altri canali non ufficiali (come ad esempio BitTorrent).
+L'idea di base dell'applicazione, è quella di consentire ai musicisti di costruire una nuova fonte di guadagno basata sulla distribuzione dei bootleg, ovvero le registrazioni degli spettacoli dal vivo realizzate dai fan (cosiddetti \textit{bootlegger}). Mentre tradizionalmente i bootleg si diffondono in maniera non ufficiale[riferimento], in questo caso di artisti ricevono royalties dalla vendita dei bootleg che condividono con i bootlegger. Inoltre, anche i fan che acquistano un bootleg, hanno la possibilità di condividere con l'artista le royalties generate da vendite future di tale contenuto. Questo costituisce un incentivo per i fan a non copiare il video e a diffonderlo in maniera indipendente, ad esempio attraverso altri canali non ufficiali (come ad esempio BitTorrent). Si presume comunque che i bootlegger siano in qualche modo autorizzati alla registrazione, in modo più o meno professionale, del concerto dell'artista. Tuttavia, questo discorso è al di fuori dello scopo di questa tesi.
 
-L'applicazione dunque permette ai bootlegger di caricare i bootleg inserendo tutte le informazioni necessarie e di metterli così a disposizione degli altri utenti. Chi accede all'applicazione, ha la possibilità di visualizzare un elenco dei Bootleg disponibili e di acquistarli. Il pagamento del bootleg viene inizialmente diviso fra il bootlegger e l'artista. 
-
-Un utente che acquista un bootleg, oltre ad avere la possibilità di visionarlo diventa così un franchisor, e in quanto tale condividerà con artista e bootlegger le royalties generate dai futuri acquisti del bootleg. Per semplicità ho usato come RDF una distribuzione in parti uguali del pagamento tra artista, bootlegger e franchisors.
+L'applicazione permette ai bootlegger di caricare i bootleg inserendo tutte le informazioni necessarie e di metterli così a disposizione degli altri utenti. Così come nell'applicazione per Ethereum, il bootleg viene rappresentato da un token univoco. Chi accede all'applicazione, ha la possibilità di visualizzare un elenco dei Bootleg disponibili e di acquistarli. Una volta acquistato un bootleg, il pagamento viene inizialmente diviso fra il bootlegger e l'artista. L'utente che acquista un bootleg riceve così il token univoco per quel bootleg, e ottiene la possibilità di visionare liberamente la registrazione del concerto. Dopo l'acquisto, l'utente viene aggiunto alla lista dei franchisor, e in quanto tale condividerà con artista e bootlegger le royalties generate dai futuri acquisti del bootleg da parte di altri utenti.
 
 \section{Architettura dell'applicazione}
 
-Radix Bootleg è un applicazione strutturata principalmente in due parti, una parte front-end e un discovery service (che è a tutti gli effetti un server).
+Radix Bootleg è un applicazione strutturata principalmente in due parti: Il Frontend e il Bootleg Service. Il Frontend è la parte che si interfaccia con l'utente, e comunica con il Bootleg Service per svolgere le funzionalità relative ai token bootleg e ai pagamenti. Il Bootleg Service in sostanza implementa le funzionalità che, in una DApp per Ethereum, sarebbero realizzate con uno Smart Contract.
 
-\subsection{Discovery Service}
+\subsection{Bootleg Service}
 
-Il discovery service ha le seguenti funzionalità:
+Il Bootleg Service ha le seguenti funzionalità:
 \begin{itemize}
     \item Creazione del token nativo dell'applicazione, il BTLG.
     \item Creazione del token univoco per il bootleg.
     \item Salvataggio su database delle informazioni relative al bootleg.
-    \item Divisione del pagamento per un bootleg tra Artista, Bootlegger ed eventuali franchisors.
-    \item Fornire agli utenti la lista dei bootleg presenti nell'applicazione
-    \item Consente ai franchisor di visualizzare i bootleg che hanno acquistato
+    \item Divisione del pagamento per un bootleg tra Artista, Bootlegger ed eventuali franchisors, sulla base di una Royalty Distribution Formula (RDF).
+    \item Fornire agli utenti la lista dei bootleg presenti nell'applicazione.
+    \item Consente ai franchisor di visualizzare i bootleg che hanno acquistato, inviando l'url della registrazione su richiesta.
 \end{itemize}
+
+Il Bootleg service dunque si interfaccia sia con il Frontend che con il database dell'applicazione. Il database ha lo scopo di mantenere i ‘‘metadati’’ del bootleg token, ovvero: titolo, descrizione, URL del contenuto, nonché gli indirizzi di artista, bootlegger e franchisors, in maniera tale da sapere chi sono i destinatari delle royalties generate da un particolare bootleg. Il Bootleg Service ha inoltre il compito di verificare che un franchisor, nel momento in cui richiede di visualizzare un bootleg, possieda effettivamente il token per quel bootleg.
 
 \subsection{Front End}
 
-Il front-end invece fornisce all'utente l'interfaccia con l'applicazione, ed offre le seguenti funzionalità:
+Il front-end invece realizza l'interfaccia utente dell'applicazione, ed offre le seguenti funzionalità:
 \begin{itemize}
     \item Consente ai franchisor di visualizzare i bootleg che hanno acquistato.
     \item Autenticarsi attraverso il Radix Wallet.
@@ -49,3 +50,5 @@ Il front-end invece fornisce all'utente l'interfaccia con l'applicazione, ed off
     \item Visualizzare il saldo dell'account.
     \item Visualizzare le transazioni dell'account.
 \end{itemize}
+
+Il front-end comunica con il Bootleg Service per ricevere le informazioni sui bootleg presenti nel sistema, nonché per l'invio dei pagamenti e della divisione di questi tra i diversi destinatari.

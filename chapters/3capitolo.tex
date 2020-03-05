@@ -20,6 +20,13 @@ Il Discovery Service ha anche il compito di definire un Token univoco per ciascu
 
 La libreria Radix offre delle funzionalità per la gestione delle identity all'interno di un'applicazione. La funzione `encryptKey`, date in input un'identity e una password, cifra la prima producendo in output un oggetto JSON detto anche \textit{keystore}. L'identity viene decifrata usando la funzione `decryptKey`, fornendo in input il keystore e la password utilizzata per produrlo.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics{images/application/identity-manage.png}
+    \caption{Funzionalità disponibili per le identity}
+    \label{fig:identity_manage}
+\end{figure}
+
 Per la gestione dell'identity all'interno dell'applicazione sono disponibili due diverse opzioni:
 \begin{itemize}
     \item Generare una nuova identity locale.
@@ -30,16 +37,24 @@ Per la gestione dell'identity all'interno dell'applicazione sono disponibili due
   \centering
   \includegraphics[width=0.75\textwidth]{images/application/create_random.png}
   \caption{Creazione di una nuova identity locale}
-  \label{fig:trex}
+  \label{fig:identity_creation}
 \end{figure}
 
-Quando l'utente genera una nuova identity locale, questa viene automaticamente cifrata con una password di default e il keystore viene salvato nella memoria del browser utilizzando la proprietà `Window.localStorage`. In questo modo, l'identity viene recuperata all'avvio successivo del browser. Quando l'utente genera una nuova identity locale, quella precedente viene sovrascritta. Tuttavia, l'applicazione offre anche la possibilità di \textit{esportare} la propria identity: Facendo export l'applicazione chiede all'utente di inserire una password per cifrare la chiave, e mostra il keystore JSON prodotto. L'utente può così salvare il contenuto del keystore all'interno di un file, che potrà così essere recuperato in un secondo momento. Con la funzione *import* infatti, l'utente inserisce il *keystore* e la password inserita in precedenza, e l'identity che ha esportato viene così importata dentro l'applicazione.
+Quando l'utente genera una nuova identity locale, questa viene automaticamente cifrata con una password di default e il keystore viene salvato nella memoria del browser utilizzando la proprietà `Window.localStorage`. Quando il frontend viene caricato, controlla la proprietà localStorage, e se è presente un keyStore salvato in precedenza, lo decifra e carica l'identity nell'applicazione. In questo modo, se l'utente chiude e riapre il browser, ritroverà la stessa identity. Quando l'utente genera una nuova identity locale, l'identity presente in localStorage viene sovrascritta e non si può più recuperare. Se l'utente crea un'identity e vuole salvarla per riutilizzarla in un secondo momento, ha la possibilità di \textit{esportare} la propria identity: Facendo con la funzione ‘‘Export’’ l'applicazione chiede all'utente di inserire una password per cifrare la chiave, e una volta scelta la password, mostra all'utente il keystore JSON prodotto. 
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{images/application/choose-password.png}
+    \caption{Scelta della password per la creazione del keystore}
+    \label{fig:choose_password}
+\end{figure}
+
+L'utente può così copiare il contenuto del keystore e salvarlo all'interno di un file, in modo da poterlo recuperare in un secondo momento. L'utente può successivamente importare l'identity creata in precedenza con la funzione \textit{import}: L'utente inserisce il keystore e la password associata per decriptare il keystore, e così facendo l'identity viene importata nell'applicazione.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth]{images/application/save-keystore.png}
-  \caption{Esportazione di un'identity locale}
-  \label{fig:trex}
+  \includegraphics[scale=0.6]{images/application/save-keystore.png}
+  \caption{Visualizzazione del keystore prodotto durante sportazione di un'identity locale}
+  \label{fig:save_keystore}
 \end{figure}
 
 Usando un'identity remota invece, l'applicazione userà la chiave privata salvata nel Radix Wallet dell'utente, che pertanto non necessita di essere salvata nel browser. In questo caso, l'applicazione invia una richiesta al Radix Wallet. Una volta che l'utente accetta la richiesta, l'applicazione potrà usare la chiave privata mantenuta nel Wallet per firmare atom per conto dell'utente. 
@@ -55,6 +70,12 @@ Per creare un bootleg, è necessario inserire:
     \item Url del bootleg (Per semplicità sono stati utilizzati dei link di video su YouTube);
 \end{itemize}
 
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{images/application/create-bootleg.png}
+    \caption{Creazione del bootleg}
+    \label{fig:bootleg_create}
+\end{figure}
+
 Quando l'utente da la conferma, questi vengono inviati al server (Discovery Service), che provvederà a creare il token per il bootleg e salverà tutti i dati inviati dall'utente sul database, insieme all'identificativo del token appena creato, ed agli indirizzi di bootlegger e artista. Terminato l'inserimento, il Discovery Service invierà all'utente l'identificativo del token come conferma.
 
 \section{Acquisto di un bootleg}
@@ -63,6 +84,12 @@ L'applicazione recupera la lista dei bootleg inseriti sul database inviando una 
 
 Per ciascun bootleg nella lista, il front end verifica se sono presenti nell'account dell'utente, e in caso contrario mostra un pulsante ‘‘Buy’’.
 
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{images/application/manage-bootleg2.png}
+    \caption{Finestra di gestione dei bootleg}
+    \label{fig:manage_bootleg}
+\end{figure}
+
 Quando un utente acquista un bootleg, l'applicazione verifica che il suo account possieda un ammontare sufficiente di BTLG. Se si, il pagamento viene inviato al discovery service, insieme ai dati del bootleg da acquistare. Il Discovery Service può così dividere il pagamento in parti uguali tra artista, bootlegger ed eventuali franchisor.
 
 Una volta che il pagamento è stato diviso tra i vari destinatari, il discovery service procede con l'invio del token all'utente ed inserisce quest'ultimo nella lista dei franchisor per quel token, aggiornando i dati sul database. In questo modo, quando verrà effettuato un nuovo acquisto del bootleg, l'utente riceverà una percentuale del pagamento come franchisor. 
@@ -70,6 +97,12 @@ Una volta che il pagamento è stato diviso tra i vari destinatari, il discovery 
 \section{Visualizzazione del bootleg}
 
 Una volta che l'utente possiede il token, nella lista dei bootleg compare il pulsante ‘‘Watch’’ di fianco al bootleg, che consente all'utente di visualizzare il bootleg. Dal momento che il front-end non possiede di per se l'url del video, deve richiederlo al Discovery Service. Il modo in cui il frontend richiede ed ottiene il link al contenuto del bootleg si basa su uno schema challenge-response. 
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{images/application/bootleg-purchased.png}
+    \caption{Bootleg acquistato}
+    \label{fig:bootleg_purchased}
+\end{figure}
 
 Cliccando su ‘‘Watch’’ il front end invia una richiesta al Discovery service per il link al bootleg.Quando il DS riceve questa richiesta, crea una \textit{challenge} casuale, la salva nel database insieme ad un attributo boolean \textit{consumed}, inizialmente settato a ‘‘false’’, per indicare che la challenge non è stata ancora utilizzata per accedere ad un bootleg. 
 
@@ -83,3 +116,18 @@ Una volta che il Discovery Service riceve anche questa richiesta:
 \end{enumerate}
 
 Una volta che il frontend riceve il link del bootleg, mostra all'utente il video YouTube attraverso un elemento `<iframe>`.
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{images/application/watch.png}
+    \caption{Visualizzazione del bootleg}
+    \label{fig:watch}
+\end{figure}
+
+\subsection{Visualizzazione del saldo e delle transazioni}
+
+L'applicazione consente inoltre all'utente di visualizzare le transazioni ricevute e inviate, nonché il saldo dei token presenti sul proprio account.
+
+\begin{figure}[H]
+    \includegraphics[width=\linewidth]{images/application/transactions.png}
+    \caption{Visualizzazione delle transazioni}
+    \label{fig:transactions}
+\end{figure}

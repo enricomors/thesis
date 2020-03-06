@@ -80,11 +80,15 @@ Dan, da questo punto in poi, tentò di percorrere diverse strade per aumentare i
 
 Tutto questo lavoro portò a compiere un test che replicò per intero tutte le transazioni avvenute su Bitcoin dal momento della sua creazione, durante il quale il sistema raggiunse la velocità di 1M di TPS Questo fu certamente un grosso traguardo per Dan e il suo team, dimostrando l'enorme scalabilità ottenibile grazie a Tempo. Tuttavia, in seguito emersero delle vulnerabilità che esponevano Tempo a due possibili vettori di attacco. Il primo è stato ribattezzato dagli sviluppatori di Radix \textit{‘‘Weak Atom Problem’’}. Esso consiste in una situazione in cui un piccolo gruppo di nodi può creare una situazione in cui il consenso è sufficientemente debole da permettere di influenzare transazioni già concluse. Il secondo vettore di attacco era invece attraverso un \textit{attacco Sybil}. Tempo infatti usava un nuovo meccanismo per proteggersi da questo tipo di attacco, chiamato \textit{Mass}, che aumentava la reputazione dei nodi all'interno della rete per la loro buona condotta nel corso del tempo. Tuttavia, è emerso che Mass non avesse grande valore per i nodi onesti, e questo apriva la strada ad un possibile mercato secondario, dove attori malevoli avrebbero potuto acquistare reputazione  (attraverso Mass) per un valore inferiore al vero.
 
-Nonostante gli sforzi del team per cercare di risolvere questi problemi, nessuna soluzione valida venne trovata. Per questo motivo, Tempo è stato abbandonato (anche se solo in parte) e la pubblicazione di una rete pubblica Radix, inizialmente prevista per la fine del 2019, è stata spostata in data da definirsi.
+Nonostante gli sforzi del team per cercare di risolvere questi problemi, nessuna soluzione valida venne trovata. Per questo motivo, Tempo è stato abbandonato (anche se solo in parte) e la pubblicazione di una rete pubblica Radix, inizialmente prevista per la fine del 2019, è stata spostata in data da definirsi. Al momento della scrittura di questa tesi (Febbraio/Marzo 2020), il team è al lavoro su un nuovo algoritmo di consenso, chiamato \textit{Cerberus}. In particolare, in data 3 Marzo 2020, è stato pubblicato il whitepaper su Cerberus. 
 
-\subsection{Cerberus}
+\subsection{L'architettura di Radix}
 
-Al momento della scrittura di questa tesi (Febbraio/Marzo 2020), il team è al lavoro su un nuovo algoritmo di consenso, chiamato \textit{Cerberus}. Cerberus si basa sullo stesso concetto di avere uno \textit{shard space} predefinito come Tempo, ma al tempo stesso si basa su una serie di strumenti crittografici ben collaudati, che gli forniscono forti garanzie per quanto concerne la sicurezza. Attualmente, di Cerberus sappiamo che utilizza un meccanismo di consenso BFT (\textit{Byzantine Fault Tolerant}) \textit{three-phase commit}, e che utilizzerà la Proof-of-Stake (PoS) come meccanismo di guardia contro attacchi Sybil. In data 3 Marzo 2020, durante le fasi finali della stesura di questa tesi, è stato pubblicato il whitepaper su Cerberus. 
+\subsubsection{Radix Engine}
+
+\subsubsection{Cerberus}
+
+Cerberus, ossia l'algorigmo di consenso usato da Radix, si basa sullo stesso concetto di avere uno \textit{shard space} predefinito come Tempo, ma al tempo stesso si basa su una serie di strumenti crittografici ben collaudati, che gli forniscono forti garanzie per quanto concerne la sicurezza. Attualmente, di Cerberus sappiamo che utilizza un meccanismo di consenso BFT (\textit{Byzantine Fault Tolerant}) \textit{three-phase commit}, e che utilizzerà la Proof-of-Stake (PoS) come meccanismo di guardia contro attacchi Sybil. 
 
 \subsection{Strumenti per gli sviluppatori}
 

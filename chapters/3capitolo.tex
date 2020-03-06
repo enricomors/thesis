@@ -26,8 +26,6 @@ Il Bootleg Service ha anche il compito di definire un Token univoco per ciascun 
 
 \section{Gestione dell'identity}
 
-La libreria Radix offre delle funzionalità per la gestione delle identity all'interno di un'applicazione. La funzione `encryptKey`, date in input un'identity e una password, cifra la prima producendo in output un oggetto JSON detto anche \textit{keystore}. L'identity viene decifrata usando la funzione `decryptKey`, fornendo in input il keystore e la password utilizzata per produrlo.
-
 \begin{figure}[H]
     \centering
     \includegraphics{images/application/identity-manage.png}
@@ -35,11 +33,13 @@ La libreria Radix offre delle funzionalità per la gestione delle identity all'i
     \label{fig:identity_manage}
 \end{figure}
 
-Per la gestione dell'identity all'interno dell'applicazione sono disponibili due diverse opzioni:
+La libreria Radix offre delle funzionalità per la gestione delle identity all'interno di un'applicazione. La funzione `encryptKey`, date in input un'identity e una password, cifra la prima producendo in output un oggetto JSON detto anche \textit{keystore}. L'identity viene decifrata usando la funzione `decryptKey`, fornendo in input il keystore e la password utilizzata per produrlo. Per la gestione dell'identity all'interno dell'applicazione sono disponibili due diverse opzioni:
 \begin{itemize}
     \item Generare una nuova identity locale.
     \item Usare un'identity remota.
 \end{itemize}
+
+\subsubsection{Identity locale}
 
 \begin{figure}[H]
   \centering
@@ -60,10 +60,12 @@ L'utente può così copiare il contenuto del keystore e salvarlo all'interno di 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.6]{images/application/save-keystore.png}
+  \includegraphics[scale=0.4]{images/application/save-keystore.png}
   \caption{Visualizzazione del keystore prodotto durante sportazione di un'identity locale}
   \label{fig:save_keystore}
 \end{figure}
+
+\subsubsection{Identity remota}
 
 Usando un'identity remota invece, l'applicazione userà la chiave privata salvata nel Radix Wallet dell'utente, che pertanto non necessita di essere salvata nel browser. In questo caso, l'applicazione invia una richiesta al Radix Wallet. Una volta che l'utente accetta la richiesta, l'applicazione potrà usare la chiave privata mantenuta nel Wallet per firmare atom per conto dell'utente.
 Mentre il Frontend consente la gestione di un'identity per conto dell'utente, il Bootleg Service ha una propria identity, che viene creata al suo primo avvio, e ripristinata agli avvii successivi. Anche in questo caso vengono utilizzate le funzioni encryptKey e decryptKey, combinate con la scrittura del keystore su un file .json. Al suo avvio, il Bootleg Service cerca il file contenente il keystore, e se lo trova, ne decifra il contenuto e carica l'identity, altrimenti ne crea una nuova.
@@ -131,7 +133,7 @@ Una volta che il frontend riceve il link del bootleg, mostra all'utente il video
     \label{fig:watch}
 \end{figure}
 
-\subsection{Visualizzazione del saldo e delle transazioni}
+\section{Visualizzazione del saldo e delle transazioni}
 
 L'applicazione consente inoltre all'utente di visualizzare le transazioni ricevute e inviate, nonché il saldo dei token presenti sul proprio account.
 

@@ -2,25 +2,31 @@
 %‘‘’’
 Sia per la realizzazione del front end che del Bootleg Service ho utilizzato TypeScript, sfruttando le funzionalità offerte dalla libreria JavaScript di Radix. 
 
-Per velocizzare lo sviluppo del Bootleg Service, ho usato come base di partenza un server realizzato con TypeScript e WebPack. Ad esso ho aggiunto il codice per la connessione ad un database locale MongoDB, per tenere traccia di tutte le informazioni relative ai bootleg. Essendo a tutti gli effetti un server, per comunicare con il Bootleg Service vengono utilizzate delle normali richieste http, costruite utilizzando la libreria axios.
+Per velocizzare lo sviluppo del Bootleg Service, ho usato come base di partenza un server realizzato con TypeScript e WebPack. Ad esso ho aggiunto il codice per la connessione ad un database locale MongoDB, per tenere traccia di tutte le informazioni relative ai bootleg. Dunque, il Bootleg Service è a tutti gli effetti un Server. Dunque, per comunicare con il Bootleg Service il Frontend utilizza delle normali richieste HTTP. Per realizzare queste richieste, ho utilizzato la libreria Axios \cite{K25}.
 
 Per il front end invece ho utilizzato il framework Vue.js, in quanto permette di realizzare un interfaccia utente in maniera piuttosto semplice, e inoltre consente di mantenere le astrazioni di Radix (Atom, Transazioni, ecc.) separate dal codice HTML.
 
 Altri strumenti utili per lo sviluppo del progetto sono stati:
 \begin{itemize}
-    \item Gli esempi di codice forniti nella documentazione, per mostrare le funzionalità basilari implementabili con la libreria JavaScript: \url{https://docs.radixdlt.com/radixdlt-js/examples/code-examples}.
-    \item Applicazione radixdlt-js-showcase, come esempio di frontend Vue.js che utilizza le funzionalità della libreria JavaScript: \url{https://github.com/radixdlt/radixdlt-js-showcase}. 
+    \item La documentazione ufficiale della libreria JavaScript \cite{K26}: 
+    \item Gli esempi di codice forniti nella documentazione, per mostrare le funzionalità basilari implementabili con la libreria JavaScript: \cite{K27}
+    \item Applicazione radixdlt-js-showcase, come esempio di frontend Vue.js che utilizza le funzionalità della libreria JavaScript: \cite{K28}
+    \item I canali di comunicazione, principalmente Telegram e Discord, messi a disposizione della community, che consentono di interagire direttamente con gli sviluppatori del team di Radix.
 \end{itemize}
 
 \subsubsection{Scelta dell'Universe}
 
 Come già accennato nel primo capitolo di questa tesi, il concetto di Universe rappresenta la rete Radix. Attualmente sono disponibili diversi Universe di testing ai quali connettersi per testare la propria applicazione (un po' come le reti messe a disposizione di Ethereum per le DApp in fase di sviluppo). La prima cosa che deve fare un'applicazione all'avvio è connettersi con uno di questi Universe a disposizione. Attualmente gli Universe disponibili per la libreria JavaScript sono: BETANET\_EMULATOR, BETANET, LOCALHOST\_SINGLENODE, LOCALHOST e SUNSTONE. In una prima versione dell'applicazione ho deciso di utilizzare l'Universe BETANET\_EMULATOR, in quanto consentiva di avviare l'applicazione senza dover prima avviare il Betanet Emulator sulla propria macchina. 
 
-Solo successivamente ho deciso di aggiungere anche una versione che utilizzasse l'Universe LOCALHOST\_SINGLENODE, che richiede l'avvio del Betanet Emulator per simulare la rete betanet sulla propria macchina. E' possibile avviare l'emulatore attraverso un'immagine Docker, seguendo la procedura spiegata nella documentazione ufficiale di Radix: \url{https://docs.radixdlt.com/kb/develop/betanet-emulator}. 
+Solo successivamente ho deciso di aggiungere anche una versione che utilizzasse l'Universe LOCALHOST\_SINGLENODE, che richiede l'avvio del Betanet Emulator per simulare la rete betanet sulla propria macchina. E' possibile avviare l'emulatore attraverso un'immagine Docker, seguendo la procedura spiegata nella documentazione ufficiale di Radix \cite{K29}. 
 
 \section{Utilizzo dei Token}
 
+\subsubsection{Token Nativo (BTLG)}
+
 Per effettuare i pagamenti dei bootleg all'interno dell'applicazione, viene usato il token BTLG. Il Bootleg Service definisce il token BTLG al suo primo avvio come un token multi-issuance. Nel momento in cui un utente crea una nuova identity, il frontend invia una richiesta al Bootleg Service per ricevere una somma iniziale di token BTLG token. In sostanza, il Bootleg Service prende il posto del Faucet, ovvero un account particolare che ha lo scopo di inviare dei token nativi di test. La scelta di creare un token nativo per l'applicazione con il Bootleg Service, e di inviarne una quantità predefinita a ciascuna nuova identity è stata presa soltanto durante l'implementazione del progetto. Inizialmente l'idea era quella di utilizzare il token nativo della piattaforma Radix (denominato XRD) richiedendone l'invio al Faucet Service all'avvio dell'applicazione. Tuttavia, dal momento che l'Universe in Radix influenza la creazione degli indirizzi, in ciascun Universe esiste un Faucet con un indirizzo differente. Non trovando da nessuna parte l'indirizzo del faucet per l'Universe BETANET\_EMULATOR, ho dunque optato per la creazione di un token nativo all'interno dell'applicazione.
+
+\subsubsection{Token univoco per il bootleg}
 
 Il Bootleg Service ha anche il compito di definire un Token univoco per ciascun bootleg nel momento della sua creazione. Il possesso di questo Token da parte di un utente è ciò che indica al sistema che tale utente ha acquistato il relativo bootleg, e pertanto è autorizzato a visualizzarlo. Inizialmente il bootleg token viene mantenuto dall'account Radix del Bootleg Server, fino a che un utente non decide di acquistare il bootleg.
 
@@ -33,22 +39,17 @@ Il Bootleg Service ha anche il compito di definire un Token univoco per ciascun 
     \label{fig:identity_manage}
 \end{figure}
 
-La libreria Radix offre delle funzionalità per la gestione delle identity all'interno di un'applicazione. La funzione `encryptKey`, date in input un'identity e una password, cifra la prima producendo in output un oggetto JSON detto anche \textit{keystore}. L'identity viene decifrata usando la funzione `decryptKey`, fornendo in input il keystore e la password utilizzata per produrlo. Per la gestione dell'identity all'interno dell'applicazione sono disponibili due diverse opzioni:
+La libreria Radix offre delle funzionalità per la gestione delle identity all'interno di un'applicazione. La funzione ‘‘encryptKey’’, date in input un'identity e una password, cifra la prima producendo in output un oggetto JSON detto anche \textit{keystore}. L'identity viene decifrata usando la funzione ‘‘decryptKey’’, fornendo in input il keystore e la password utilizzata per produrlo. Per la gestione dell'identity all'interno dell'applicazione sono disponibili due diverse opzioni:
 \begin{itemize}
     \item Generare una nuova identity locale.
-    \item Usare un'identity remota.
+    \item Connettersi ad un'identity remota pre esitente, salvata nel Wallet software dell'utente.
+    \item Importare un'identity locale esistente.
+    \item Esportare l'identity locale corrente.
 \end{itemize}
 
 \subsubsection{Identity locale}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.75\textwidth]{images/application/create_random.png}
-  \caption{Creazione di una nuova identity locale}
-  \label{fig:identity_creation}
-\end{figure}
-
-Quando l'utente genera una nuova identity locale, questa viene automaticamente cifrata con una password di default e il keystore viene salvato nella memoria del browser utilizzando la proprietà `Window.localStorage`. Quando il frontend viene caricato, controlla la proprietà localStorage, e se è presente un keyStore salvato in precedenza, lo decifra e carica l'identity nell'applicazione. In questo modo, se l'utente chiude e riapre il browser, ritroverà la stessa identity. Quando l'utente genera una nuova identity locale, l'identity presente in localStorage viene sovrascritta e non si può più recuperare. Se l'utente crea un'identity e vuole salvarla per riutilizzarla in un secondo momento, ha la possibilità di \textit{esportare} la propria identity: Facendo con la funzione ‘‘Export’’ l'applicazione chiede all'utente di inserire una password per cifrare la chiave, e una volta scelta la password, mostra all'utente il keystore JSON prodotto. 
+Quando l'utente genera una nuova identity locale, questa viene automaticamente cifrata con una password di default e il keystore viene salvato nella memoria del browser utilizzando la proprietà ‘‘Window.localStorage’’ dell'API Web Storage. Quando il frontend viene caricato, controlla la proprietà localStorage, e se è presente un keyStore salvato in precedenza, lo decifra e carica l'identity nell'applicazione. In questo modo, se l'utente chiude e riapre il browser, ritroverà la stessa identity. Quando l'utente genera una nuova identity locale, l'identity presente in localStorage viene sovrascritta e non si può più recuperare. Se l'utente crea un'identity e vuole salvarla per riutilizzarla in un secondo momento, ha la possibilità di \textit{esportare} la propria identity: Facendo con la funzione ‘‘Export’’ l'applicazione chiede all'utente di inserire una password per cifrare la chiave, e una volta scelta la password, mostra all'utente il keystore JSON prodotto. 
 
 \begin{figure}[H]
     \includegraphics[width=\linewidth]{images/application/choose-password.png}
@@ -87,7 +88,7 @@ Per creare un bootleg, è necessario inserire:
     \label{fig:bootleg_create}
 \end{figure}
 
-Quando l'utente da la conferma, questi vengono inviati al server (Bootleg Service), che provvederà a creare il token per il bootleg e salverà tutti i dati inviati dall'utente sul database, insieme all'identificativo del token appena creato, ed agli indirizzi di bootlegger e artista. Terminato l'inserimento, il Bootleg Service invierà all'utente l'identificativo del token come conferma.
+Quando l'utente da la conferma, questi vengono inseriti in una richiesta http ed inviati al Bootleg Service, che provvederà a creare il token per il bootleg e salverà tutti i dati inviati dall'utente sul database, insieme all'identificativo del token appena creato, ed agli indirizzi di bootlegger e artista. Terminato l'inserimento, il Bootleg Service invierà all'utente l'identificativo del token come conferma.
 
 \section{Acquisto di un bootleg}
 

@@ -2,13 +2,48 @@
 
 \section{Cosa voglio realizzare}
 %‘‘’’
-L'applicazione che ho deciso di realizzare prende ispirazione dal progetto open-source \textit{Shared Royalty Non-Fungible Token} (SRNFT), avviato dal Web3Studio, una organizzazione di Consensys che si occupa di R&S nel campo delle tecnologie Blockchain e delle DApp. Lo scopo di tale progetto è quello di rendere qualunque sistema di Royalty - dall'industria del gas e del petrolio, fino all'intrattenimento - gestibile attraverso la blockchain Ethereum. Tale progetto si basa sul Token SRNFT che si presenta come una estensione del Token ERC721, ed offre tre funzionalità principali:
+L'applicazione che ho deciso di realizzare prende ispirazione dal progetto open-source \textit{Shared Royalty Non-Fungible Token} (SRNFT), avviato dal Web3Studio, una organizzazione di Consensys che si occupa di R&S nel campo delle tecnologie Blockchain e delle DApp. Lo scopo di tale progetto è quello di rendere qualunque sistema di Royalty, dall'industria del gas e del petrolio, fino all'intrattenimento, gestibile attraverso la blockchain Ethereum. Tale progetto si basa sul Token SRNFT che si presenta come una estensione del Token ERC721, ed offre tre funzionalità principali:
 \begin{enumerate}
     \item Gestire e distribuire cash flow futuri verso destinatari multipli, chiamati Franchisors.
     \item Rendere unici e tracciabili asset digitali off-chain.
     \item Creare incentivi per i proprietari di tali asset affinché non li diffondano in maniera impropria al pubblico.
 \end{enumerate}
-Il SRNFT mantiene una lista di account Ethereum chiamati ‘‘franchisors’’ nella forma di un array, in maniera che un singolo token possa gestire cash flow verso parti multiple, in base ad una formula di distribuzione di royalties (\textit{Royalty Distribution Formula} o RDF). La RDF implementata può variare in base a quelli che sono gli incentivi che si vogliono creare nei diversi casi d'uso. 
+Il SRNFT mantiene una lista di account Ethereum chiamati ‘‘franchisors’’ nella forma di un array, in maniera che un singolo token possa gestire cash flow verso parti multiple, in base ad una formula di distribuzione di royalties (\textit{Royalty Distribution Formula} o RDF). La RDF implementata può variare in base a quelli che sono gli incentivi che si vogliono creare nei diversi casi d'uso.
+
+Vediamo come nell'implementazione di Web3Studio, il contratto per ciascun token SRNFT mantenga una semplice struttura dati (Fonte: \href{https://github.com/ConsenSys/web3studio-bootleg/blob/master/packages/bootleg-tokens/contracts/AbstractSharedRoyaltyToken.sol#L13}{AbstractSharedRoyaltyToken.sol}):
+
+\begin{lstlisting}[language=Solidity,numbers=none]
+struct Token {
+  // The list of franchisors
+  address[] franchisors;
+
+  // A list of payments (in wei). Payment indices line up to
+  // what payment was made for the matching franchisor
+  uint256[] payments;
+
+  // For any franchisor, what is the next payment index that a
+  // withdrawal should next consider.
+  // (More details on this part later.)
+  mapping(address => uint256) franchisorNextWithdrawIndex;
+}
+\end{lstlisting}
+
+Ogni volta che viene aggiunto un nuovo Franchisor, solitamente quando un token viene trasferito da proprietario all'altro, vengono effettuate alcune operazioni:
+
+\begin{lstlisting}[language=Solidity,numbers=none]
+function _addFranchisor (
+  address franchisor, uint256 payment, uint256 tokenId)
+{
+  // A new franchisor is added to the list
+  token.franchisors.push(franchisor);
+
+  // Payments sent will be associated with that franchisor
+  token.payments.push(msg.value);
+
+  // We set where this franchisor can withdraw from
+  token.franchisorNextWithdrawIndex[franchisor] = token.payments.length;
+}
+\end{lstlisting}
 
 Un token ERC721 può avere un solo proprietario, e questa restrizione viene mantenuta nel SRNFT (gli stessi autori del progetto specificano che sarebbe interessante modificare tale aspetto, in modo da avere account multipli come proprietari del token). Dunque, nonostante vi possano essere più franchisor, solo quello aggiunto più recentemente ha la possibilità di trasferire il token ad un nuovo proprietario.
 

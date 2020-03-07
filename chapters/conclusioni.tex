@@ -1,0 +1,32 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%per fare le conclusioni
+\chapter*{Conclusioni}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%imposta l'intestazione di pagina
+\rhead[\fancyplain{}{\bfseries
+CONCLUSIONI}]{\fancyplain{}{\bfseries\thepage}}
+\lhead[\fancyplain{}{\bfseries\thepage}]{\fancyplain{}{\bfseries
+CONCLUSIONI}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%aggiunge la voce Conclusioni
+                                        %   nell'indice
+\addcontentsline{toc}{chapter}{Conclusioni} 
+
+In conclusione, in questa tesi è stata esposta una panoramica generale sulle blockhain, sulla loro storia e sulle caratteristiche principali di questa tecnologia, esponendo i casi di Bitcoin ed Ethereum, rispettivamente la prima e la seconda tra le criptovalute con maggior capitalizzazione di mercato. Si è visto poi come questa tecnologia, fornendo sicurezza e di consenso su di un unico ordine degli eventi in una rete distribuita senza bisogno di un'autorità centrale, abbia visto espandere i suoi possibili utilizzi. Dalle criptovalute, si è passati ad avere possibili applicazioni nei campi più disparati.
+Partendo da questa base, è stato esposto il problema della scalabilità delle blockchain, e di quali sono state alcune fra le soluzioni proposte, in particolar modo, lo \textit{sharding}. Dunque è stata presentata una nuova tecnologia DLT, ovvero Radix. Essa si presenta come una piattaforma alternativa alle blockchain, ma caratterizzata da scalabilità e facilità nel costruire applicazioni che sfruttino il suo registro distribuito come base. Dopo aver visto come Radix riesce ad essere scalabile, per verificare con mano la facilità nella costruzione di applicazioni, è stata implementata un'applicazione utilizzando la libreria JavaScript di Radix. 
+
+\subsubsection{Implementazione}
+
+Durante l'implementazione di tale applicazione, si è effettivamente riscontrato come la presenza di librerie che utilizzano linguaggi altamente diffusi consenta ad uno sviluppatore di implementare facilmente applicazione basate sul ledger Radix. Le difficoltà riscontrate durante lo sviluppo certamente includono una documentazione che forse a volte non è abbastanza dettagliata, e l'assenza di una community di sviluppatori folta ed attiva attorno alla piattaforma Radix. La causa di ciò è probabilmente da ricercare nel fatto che si tratta ancora di un progetto in via di sviluppo. Tuttavia, i canali di comunicazione presenti (principalmente Telegram e Discord) sono stati utili per ricevere supporto durante la fase di implementazione.
+
+\subsubsection{Limiti dello stato attuale}
+
+Uno dei limiti dello stato attuale di Radix è certamente quello di non avere ancora a disposizione una rete pubblica stabile e robusta, nonché la necessità di dover simulare una rete in locale per poter testare le proprie applicazioni. Attualmente, non si sa ancora quando la rete pubblica di Radix sarà disponibile. Il suo rilascio è stato recentemente posticipato a causa di problemi di sicurezza che hanno portato gli sviluppatori a cambiare l'algoritmo di consenso alla base del ledger Radix, non senza generare qualche scetticismo da parte della community esistente intorno al progetto. Questo probabilmente anche per il fatto che, nonostante diversi canali di comunicazione disponibili (fra cui Telegram e Discord), si ha come membri della communitiy la sensazione di non avere veramente un idea chiara al 100\% su ciò che succede dietro le quinte. Certamente la scelta di rendere il progetto open source è stata effettuata anche con la volontà di maggiore trasparenza verso l'esterno, nonché per fornire la possibilità a soggetti esterni di dare il loro contributo al progetto.
+
+\subsubsection{Possibili sviluppi futuri}
+
+L'applicazione che è stata realizzata può fornire un esempio di ciò che è possibile realizzare utilizzando le librerie Radix, e dimostra come tali librerie possano essere facilmente integrate con un framework JavaScript, in questo caso Vue.js. Certamente si tratta di un'applicazione che potrebbe essere migliorata sotto molti aspetti. Alcuni sviluppi futuri dell'applicazione potrebbero includere:
+\begin{itemize}
+    \item Miglioramento della gestione del token nativo.
+    \item Differenziare le funzionalità dell'applicazione disponibili per artista, bootlegger e franchisor.
+    \item Consentire agli artisti di autorizzare il caricamento di un bootleg sulla piattaforma.
+    \item La memorizzazione dei bootleg non più come video di YouTube, ma su un file system distribuito  (ad esempio IPFS: \url{https://ipfs.io/}).
+\end{itemize}

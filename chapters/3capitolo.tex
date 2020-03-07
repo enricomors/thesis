@@ -126,7 +126,7 @@ Una volta che il Bootleg Service riceve anche questa richiesta:
     \item Verifica il possesso del bootleg: Il DS controlla il saldo dell'account dell'utente che ha inviato la richiesta e verifica se è presente il token del bootleg richiesto. Se il token è presente, allora il DS recupera il link del video dal database e lo invia come risposta al frontend.
 \end{enumerate}
 
-Una volta che il frontend riceve il link del bootleg, mostra all'utente il video YouTube attraverso un elemento `<iframe>`.
+Una volta che il frontend riceve il link del bootleg, mostra all'utente il video YouTube in modalità embedded, attraverso un elemento `<iframe>`.
 \begin{figure}[H]
     \includegraphics[width=\linewidth]{images/application/watch.png}
     \caption{Visualizzazione del bootleg}
